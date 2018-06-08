@@ -66,7 +66,7 @@ DJISDKNode::missionWpUploadCallback(
   }
 
   ROS_INFO("initialized waypoint mission");
-  sleep(1);
+  //sleep(1);
 
   //! initialize waypoint mission related info
   ACK::WayPointIndex          uploadAck;
