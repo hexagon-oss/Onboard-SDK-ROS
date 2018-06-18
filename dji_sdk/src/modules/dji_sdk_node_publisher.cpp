@@ -681,6 +681,7 @@ void DJISDKNode::alignRosTimeWithFlightController(ros::Time now_time, uint32_t t
   }
 }
 
+
 #ifdef ADVANCED_SENSING
 void DJISDKNode::publish240pStereoImage(Vehicle*            vehicle,
                                         RecvContainer       recvFrame,
@@ -783,3 +784,24 @@ void DJISDKNode::publishMainCameraImage(CameraRGBImage rgbImg, void* userData)
   node_ptr->main_camera_stream_publisher.publish(img);
 }
 #endif // ADVANCED_SENSING
+
+
+void DJISDKNode::publishWaypointReached(Vehicle*            vehicle,
+                                        RecvContainer       recvFrame,
+                                        DJI::OSDK::UserData userData)
+{
+  DJISDKNode* node_ptr = reinterpret_cast<DJISDKNode*>(userData);
+
+  DJI::OSDK::ACK::WayPointReachedData* wp_reached_data = (reinterpret_cast<DJI::OSDK::ACK::WayPointReachedData*>(&recvFrame.recvData.raw_ack_array));
+  ROS_INFO("WayPointReachedData: incident_type=%u, waypoint_index=%u, current_status=%u\n", wp_reached_data->incident_type, wp_reached_data->waypoint_index, wp_reached_data->current_status);
+
+  dji_sdk::WaypointReached wp;
+  wp.incident_type  = wp_reached_data->incident_type;
+  wp.waypoint_index = wp_reached_data->waypoint_index;
+  wp.current_status = wp_reached_data->current_status;
+  wp.reserved_1     = wp_reached_data->reserved_1;
+  wp.reserved_2     = wp_reached_data->reserved_2;
+
+  node_ptr->waypoint_reached_publisher.publish(wp);
+}
+

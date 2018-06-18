@@ -43,6 +43,7 @@
 #include <dji_sdk/MissionWpGetSpeed.h>
 #include <dji_sdk/MissionWpSetSpeed.h>
 #include <dji_sdk/MissionWpUpload.h>
+#include <dji_sdk/WaypointReached.h>
 // hotpoint
 #include <dji_sdk/MissionHpAction.h>
 #include <dji_sdk/MissionHpGetInfo.h>
@@ -262,6 +263,10 @@ private:
   static void publishFPVCameraImage(CameraRGBImage img, void* userData);
 #endif
 
+  static void publishWaypointReached(Vehicle*            vehicle,
+                                     RecvContainer       recvFrame,
+                                     DJI::OSDK::UserData userData);
+
 private:
   //! OSDK core
   Vehicle* vehicle;
@@ -354,6 +359,9 @@ private:
   ros::Publisher main_camera_stream_publisher;
   ros::Publisher fpv_camera_stream_publisher;
 #endif
+
+  ros::Publisher waypoint_reached_publisher;
+
   //! constant
   const int WAIT_TIMEOUT           = 10;
   const int MAX_SUBSCRIBE_PACKAGES = 5;

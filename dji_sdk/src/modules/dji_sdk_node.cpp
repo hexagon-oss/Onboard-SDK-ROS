@@ -13,6 +13,8 @@
 
 using namespace DJI::OSDK;
 
+
+
 DJISDKNode::DJISDKNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
   : telemetry_from_fc(USE_BROADCAST),
     R_FLU2FRD(tf::Matrix3x3(1,  0,  0, 0, -1,  0, 0,  0, -1)),
@@ -64,6 +66,7 @@ DJISDKNode::DJISDKNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
       ROS_ERROR("initPublisher failed");
     }
   }
+
 }
 
 DJISDKNode::~DJISDKNode()
@@ -340,7 +343,8 @@ DJISDKNode::initPublisher(ros::NodeHandle& nh)
     nh.advertise<sensor_msgs::Image>("dji_sdk/fpv_camera_images", 10);
 #endif
 
-
+  waypoint_reached_publisher =
+      nh.advertise<dji_sdk::WaypointReached>("dji_sdk/waypoint_reached", 10);
 
   if (telemetry_from_fc == USE_BROADCAST)
   {

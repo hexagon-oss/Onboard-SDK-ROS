@@ -11,6 +11,9 @@
 
 #include <dji_sdk/dji_sdk_node.h>
 
+
+
+
 bool
 DJISDKNode::missionStatusCallback(dji_sdk::MissionStatus::Request&  request,
                                   dji_sdk::MissionStatus::Response& response)
@@ -116,6 +119,9 @@ DJISDKNode::missionWpUploadCallback(
     i += 1;
     //sleep(1);
   }
+
+  // Uploaded successfully completed, set mission callback
+  vehicle->missionManager->wpMission->setWaypointEventCallback(publishWaypointReached, this);
 
   ROS_INFO("waypoint mission initialized and uploaded");
   return true;
