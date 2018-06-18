@@ -71,6 +71,10 @@ DJISDKNode::missionWpUploadCallback(
   ROS_INFO("initialized waypoint mission");
   //sleep(1);
 
+  // Uploaded successfully completed, set mission callback
+  // Needs to be done after the missionManager->Init
+  vehicle->missionManager->wpMission->setWaypointEventCallback(publishWaypointReached, this);
+
   //! initialize waypoint mission related info
   ACK::WayPointIndex          uploadAck;
   DJI::OSDK::WayPointSettings wpData;
@@ -119,9 +123,6 @@ DJISDKNode::missionWpUploadCallback(
     i += 1;
     //sleep(1);
   }
-
-  // Uploaded successfully completed, set mission callback
-  vehicle->missionManager->wpMission->setWaypointEventCallback(publishWaypointReached, this);
 
   ROS_INFO("waypoint mission initialized and uploaded");
   return true;
