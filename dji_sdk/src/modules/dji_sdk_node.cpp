@@ -39,34 +39,37 @@ DJISDKNode::DJISDKNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
 
   // @todo need some error handling for init functions
   //! @note parsing launch file to get environment parameters
-  if (!initVehicle(nh_private))
+  // Uranos change
+  try
   {
-    ROS_ERROR("Vehicle initialization failed");
+    initVehicle(nh_private); // error throws exceptions
+  }
+  catch(std::exception& e)
+  {
+    delete vehicle;
+    vehicle = nullptr;
+    throw e;
   }
 
-  else
+  if (!initServices(nh))
   {
-    if (!initServices(nh))
-    {
-      ROS_ERROR("initServices failed");
-    }
-
-    if (!initFlightControl(nh))
-    {
-      ROS_ERROR("initFlightControl failed");
-    }
-
-    if (!initSubscriber(nh))
-    {
-      ROS_ERROR("initSubscriber failed");
-    }
-
-    if (!initPublisher(nh))
-    {
-      ROS_ERROR("initPublisher failed");
-    }
+    ROS_ERROR("initServices failed");
   }
 
+  if (!initFlightControl(nh))
+  {
+    ROS_ERROR("initFlightControl failed");
+  }
+
+  if (!initSubscriber(nh))
+  {
+    ROS_ERROR("initSubscriber failed");
+  }
+
+  if (!initPublisher(nh))
+  {
+    ROS_ERROR("initPublisher failed");
+  }
 }
 
 DJISDKNode::~DJISDKNode()
@@ -98,6 +101,7 @@ DJISDKNode::initVehicle(ros::NodeHandle& nh_private)
   if(!setupStatus)
   {
     delete (linuxSerialDevice);
+    throw std::runtime_error("Serial error"); // Uranos change
     return false;
   }
   else
@@ -115,7 +119,9 @@ DJISDKNode::initVehicle(ros::NodeHandle& nh_private)
    */
   if (ACK::getError(this->activate(this->app_id, this->enc_key)))
   {
-    ROS_ERROR("drone activation error");
+    // Uranos change
+    //ROS_ERROR("drone activation error");
+    throw std::runtime_error("Activation error");
     return false;
   }
   ROS_INFO("drone activated");
@@ -127,6 +133,9 @@ DJISDKNode::initVehicle(ros::NodeHandle& nh_private)
       && vehicle->getFwVersion() < mandatoryVersionBase
       && (!isM100()))
   {
+    // Uranos change
+    ROS_ERROR("FW Version: %d", vehicle->getFwVersion());
+    throw std::runtime_error("FW Version error");
     return false;
   }
 
@@ -215,7 +224,7 @@ bool DJISDKNode::isM100()
 ACK::ErrorCode
 DJISDKNode::activate(int l_app_id, std::string l_enc_key)
 {
-  usleep(1000000);
+  //usleep(1000000); Uranos change
   Vehicle::ActivateData testActivateData;
   char                  app_key[65];
   testActivateData.encKey = app_key;
@@ -606,7 +615,7 @@ bool DJISDKNode::validateSerialDevice(LinuxSerialDevice* serialDevice)
     ROS_ERROR("Failed to set up port for timed read.\n");
     return (false);
   };
-  usleep(100000);
+  // usleep(100000); Uranos change
   if(serialDevice->serialRead(buf, BUFFER_SIZE))
   {
     ROS_INFO("Succeeded to read from serial device");
