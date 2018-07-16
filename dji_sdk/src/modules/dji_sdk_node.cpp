@@ -44,11 +44,11 @@ DJISDKNode::DJISDKNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
   {
     initVehicle(nh_private); // error throws exceptions
   }
-  catch(std::exception& e)
+  catch(const std::exception& e)
   {
     delete vehicle;
     vehicle = nullptr;
-    throw e;
+    throw;
   }
 
   if (!initServices(nh))
@@ -224,7 +224,7 @@ bool DJISDKNode::isM100()
 ACK::ErrorCode
 DJISDKNode::activate(int l_app_id, std::string l_enc_key)
 {
-  //usleep(1000000); Uranos change
+  usleep(1000000);
   Vehicle::ActivateData testActivateData;
   char                  app_key[65];
   testActivateData.encKey = app_key;
@@ -615,7 +615,7 @@ bool DJISDKNode::validateSerialDevice(LinuxSerialDevice* serialDevice)
     ROS_ERROR("Failed to set up port for timed read.\n");
     return (false);
   };
-  // usleep(100000); Uranos change
+  usleep(100000);
   if(serialDevice->serialRead(buf, BUFFER_SIZE))
   {
     ROS_INFO("Succeeded to read from serial device");

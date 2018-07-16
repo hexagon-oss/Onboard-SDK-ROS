@@ -25,7 +25,7 @@ bool run_node(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
     dji_sdk_node = NULL;
     return true;
   }
-  catch(std::exception& e)
+  catch(const std::exception& e)
   {
     ROS_ERROR("%s", e.what());
     return false;
