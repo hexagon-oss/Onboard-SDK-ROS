@@ -515,10 +515,15 @@ DJISDKNode::publish100HzData(Vehicle *vehicle, RecvContainer recvFrame,
   tf::Quaternion q_FLU2ENU;
   R_FLU2ENU.getRotation(q_FLU2ENU);
   // @note this mapping is tested
-  q.quaternion.w = q_FLU2ENU.getW();
-  q.quaternion.x = q_FLU2ENU.getX();
-  q.quaternion.y = q_FLU2ENU.getY();
-  q.quaternion.z = q_FLU2ENU.getZ();
+  // q.quaternion.w = q_FLU2ENU.getW();
+  // q.quaternion.x = q_FLU2ENU.getX();
+  // q.quaternion.y = q_FLU2ENU.getY();
+  // q.quaternion.z = q_FLU2ENU.getZ();
+
+  q.quaternion.w = quat.q0;
+  q.quaternion.x = quat.q1;
+  q.quaternion.y = quat.q2;
+  q.quaternion.z = quat.q3;
   p->attitude_publisher.publish(q);
 
   Telemetry::TypeMap<Telemetry::TOPIC_ANGULAR_RATE_FUSIONED>::type w_FC =
