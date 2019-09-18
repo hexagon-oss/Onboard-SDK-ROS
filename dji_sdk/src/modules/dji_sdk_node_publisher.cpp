@@ -520,11 +520,18 @@ DJISDKNode::publish100HzData(Vehicle *vehicle, RecvContainer recvFrame,
   // q.quaternion.y = q_FLU2ENU.getY();
   // q.quaternion.z = q_FLU2ENU.getZ();
 
+  // we are forcing the quaternion to be in the NED frame!!!
   q.quaternion.w = quat.q0;
   q.quaternion.x = quat.q1;
   q.quaternion.y = quat.q2;
   q.quaternion.z = quat.q3;
   p->attitude_publisher.publish(q);
+
+  // calculate yaw from quaternion
+  std_msgs::Float32 yaw_quaternion;
+  yaw_quaternion.data   = 180 * (atan2(2.0 * (q.quaternion.z * q.quaternion.w + q.quaternion.x * q.quaternion.y), 
+    - 1.0 + 2.0 * (q.quaternion.w * q.quaternion.w + q.quaternion.x * q.quaternion.x))) / M_PI;
+  p->attitude_yaw_publisher.publish(yaw_quaternion);
 
   Telemetry::TypeMap<Telemetry::TOPIC_ANGULAR_RATE_FUSIONED>::type w_FC =
     vehicle->subscribe->getValue<Telemetry::TOPIC_ANGULAR_RATE_FUSIONED>();
