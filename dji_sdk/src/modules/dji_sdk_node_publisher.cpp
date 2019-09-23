@@ -526,7 +526,7 @@ DJISDKNode::publish100HzData(Vehicle *vehicle, RecvContainer recvFrame,
   std_msgs::Float32 yaw_quaternion;
   yaw_quaternion.data   = 180 * (atan2(2.0 * (quat.q3 * quat.q0 + quat.q1 * quat.q2), 
     - 1.0 + 2.0 * (quat.q0 * quat.q0 + quat.q1 * quat.q1))) / M_PI;
-  p->attitude_yaw_publisher.publish(yaw_quaternion);
+  p->attitude_yaw_publisher.publish((yaw_quaternion + 360) % 360);
 
   Telemetry::TypeMap<Telemetry::TOPIC_ANGULAR_RATE_FUSIONED>::type w_FC =
     vehicle->subscribe->getValue<Telemetry::TOPIC_ANGULAR_RATE_FUSIONED>();
